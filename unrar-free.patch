@@ -1,0 +1,109 @@
+Common subdirectories: unrar/src/CVS and unrar-mod/src/CVS
+diff -u unrar/src/unpack29.c unrar-mod/src/unpack29.c
+--- unrar/src/unpack29.c	2007-11-26 23:12:05.000000000 +0900
++++ unrar-mod/src/unpack29.c	2013-10-31 02:49:20.789228841 +0900
+@@ -24,16 +24,14 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include "unrarlib.h"
+-/*
+ #include "unrar29.h"
+ #include "unrar20.h"
+ #include "unrar15.h"
+-*/
+ 
+ int UnpackXX_fileoutput(FILE *outputfile,int rarmethod,FILE *inputfile,int DestUnpSize, int UnpPackedSize, int Flags) {
+   int filepos,intfd;
+   int retval=0;
+-/*  static unpack_data_t *unpack_data=NULL;
++  static unpack_data_t *unpack_data=NULL;
+ 
+   filepos = ftell(inputfile);
+ 
+@@ -74,7 +72,7 @@
+   }
+ 
+   fseek(inputfile,filepos+UnpPackedSize,SEEK_SET);
+-  fflush(outputfile);*/
++  fflush(outputfile);
+   return retval;
+ }
+ 
+Only in unrar-mod/src: unrar.bc
+Only in unrar-mod/src: unrar.js
+Only in unrar-mod/src: unrar.js.map
+diff -u unrar/src/unrar15.h unrar-mod/src/unrar15.h
+--- unrar/src/unrar15.h	2007-03-23 22:00:14.000000000 +0900
++++ unrar-mod/src/unrar15.h	2013-10-31 02:49:20.789228841 +0900
+@@ -24,6 +24,7 @@
+ #ifndef UNRAR15_H
+ #define UNRAR15_H 1
+ 
++#include "unrar29.h"
+ int rar_unpack15(int fd, int solid, unpack_data_t *unpack_data);
+ 
+ #endif
+diff -u unrar/src/unrar20.h unrar-mod/src/unrar20.h
+--- unrar/src/unrar20.h	2007-03-23 22:00:14.000000000 +0900
++++ unrar-mod/src/unrar20.h	2013-10-31 02:49:20.789228841 +0900
+@@ -30,6 +30,7 @@
+ #define MC20 257
+ #define NC20 298  /* alphabet = {0, 1, 2, ..., NC - 1} */
+ 
++#include "unrar29.h"
+ void unpack_init_data20(int solid, unpack_data_t *unpack_data);
+ int rar_unpack20(int fd, int solid, unpack_data_t *unpack_data);
+ 
+diff -u unrar/src/unrarcmd.h unrar-mod/src/unrarcmd.h
+--- unrar/src/unrarcmd.h	2007-03-23 22:00:14.000000000 +0900
++++ unrar-mod/src/unrarcmd.h	2013-10-31 02:49:20.789228841 +0900
+@@ -26,7 +26,6 @@
+ 
+ #include <stdlib.h>
+ 
+-#include "unrarvm.h"
+ 
+ typedef struct rar_cmd_array_tag
+ {
+@@ -34,6 +33,7 @@
+ 	size_t num_items;
+ } rar_cmd_array_t;
+ 
++#include "unrarvm.h"
+ void rar_cmd_array_init(rar_cmd_array_t *cmd_a);
+ void rar_cmd_array_reset(rar_cmd_array_t *cmd_a);
+ int rar_cmd_array_add(rar_cmd_array_t *cmd_a, int num);
+diff -u unrar/src/unrarfilter.h unrar-mod/src/unrarfilter.h
+--- unrar/src/unrarfilter.h	2007-03-23 22:00:14.000000000 +0900
++++ unrar-mod/src/unrarfilter.h	2013-10-31 02:49:20.789228841 +0900
+@@ -32,6 +32,7 @@
+ 	size_t num_items;
+ } rar_filter_array_t;
+ 
++#include "unrar29.h"
+ void rar_filter_array_init(rar_filter_array_t *filter_a);
+ void rar_filter_array_reset(rar_filter_array_t *filter_a);
+ int rar_filter_array_add(rar_filter_array_t *filter_a, int num);
+diff -u unrar/src/unrarlib.c unrar-mod/src/unrarlib.c
+--- unrar/src/unrarlib.c	2007-11-26 23:12:05.000000000 +0900
++++ unrar-mod/src/unrarlib.c	2013-10-31 02:49:20.789228841 +0900
+@@ -794,7 +794,7 @@
+ 	  else
+ 	    {
+ 	      if (NewLhd.UnpVer==29) {
+-	        /*Unpack29(inputfile,DestUnpSize,UnpPackedSize,NewLhd.Flags);*/
++	        Unpack29(inputfile,DestUnpSize,UnpPackedSize,NewLhd.Flags);
+               } else {
+ 	        Unpack (UnpMemory);
+               }
+diff -u unrar/src/unrarppm.h unrar-mod/src/unrarppm.h
+--- unrar/src/unrarppm.h	2007-03-23 22:00:14.000000000 +0900
++++ unrar-mod/src/unrarppm.h	2013-10-31 02:49:20.789228841 +0900
+@@ -102,6 +102,7 @@
+ 	uint16_t bin_summ[128][64];
+ } ppm_data_t;
+ 
++#include "unrar29.h"
+ int ppm_decode_init(ppm_data_t *ppm_data, int fd, struct unpack_data_tag *unpack_data, int *EscChar);
+ int ppm_decode_char(ppm_data_t *ppm_data, int fd, struct unpack_data_tag *unpack_data);
+ void ppm_constructor(ppm_data_t *ppm_data);

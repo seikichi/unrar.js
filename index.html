@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+  <head>
+    <title>unrar.js demo</title>
+  </head>
+  <body>
+    <h1>Unrar.js demo</h1>
+    <div id="drop-zone">Drop a RAR file here</div>
+    <div id="output">
+      <ul></ul>
+    </div>
+
+    <style>
+      #drop-zone {
+      border: 2px dashed rgb(187, 187, 187);
+      border-radius: 5px 5px 5px 5px;
+      padding: 50px;
+      text-align: center;
+      color: rgb(87, 87, 87);
+      }
+    </style>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="./unrar.min.js"></script>
+    <script>
+$(function () {
+  var dropzone = $('#drop-zone');
+  dropzone.on('dragover', function (jqEvent) {
+    var event = jqEvent.originalEvent;
+    event.stopPropagation();
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  });
+
+  var unrar = null;
+  dropzone.on('drop', function (jqEvent) {
+    var event = jqEvent.originalEvent;
+    event.stopPropagation();
+    event.preventDefault();
+    var files = event.dataTransfer.files
+    if (files.length === 0) { return; }
+    var file = files[0];
+
+    var reader = new FileReader();
+    reader.onload = (function (theFile) {
+      return function (e) {
+         var data = e.target.result;
+         if (unrar !== null) { unrar.close(); }
+         unrar = new Unrar(data);
+         var entries = unrar.getEntries();
+         var fragment = document.createDocumentFragment();
+         for (var i = 0, len = entries.length; i < len; ++i) {
+           (function (name) {
+             var li = document.createElement('li');
+             var a = '<a href="#">' + escape(name) + '</a>';
+             li.innerHTML = a;
+             fragment.appendChild(li);
+             $(li).children().on('click', function () {
+                var data = unrar.decompress(name);
+                var blob = new Blob([data]);
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.download = name;
+                a.href = url;
+                a.target = '_blank';
+                var event = new MouseEvent('click', {
+                  'view': window,
+                  'bubbles': true,
+                  'cancelable': true
+                });
+                a.dispatchEvent(event);
+             });
+           })(entries[i].name);
+         }
+         $('#output ul').html(fragment);
+      };
+    })(file);
+    reader.readAsArrayBuffer(file);
+  });
+});
+    </script>
+  </body>
+</html>
